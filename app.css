@@ -1,0 +1,13 @@
+html
+{
+    height: 100%;    
+}
+
+body
+{
+    background: #205983 radial-gradient(#205983, #0A2742);
+    font-family:Verdana; color:#FFF;
+    text-shadow: 1px 1px 8px #000;
+}
+
+h1 { text-align: center; }
