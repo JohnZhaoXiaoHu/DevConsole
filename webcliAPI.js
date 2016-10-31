@@ -10,11 +10,12 @@ class Command {
     }
 }
 
+
 class CmdResult {
-    constructor(output, isHTML, isError) {
-        this.output  = output  || "";
-        this.isHTML  = isHTML  || false;
-        this.isError = isError || false;
+    constructor(output = "", isHTML = false, isError = false) {
+        this.output  = output;
+        this.isHTML  = isHTML;
+        this.isError = isError;
     }
 }
 
@@ -58,7 +59,7 @@ _commands.HELP = new Command("Lists available commands", function(args) {
     let s = "<table class='webcli-tbl'>";
 
     Object.keys(_commands).forEach( (key)=> {
-        let cmd = _commands[key];
+        let cmd  = _commands[key];
         let name = escape(key.toLowerCase());
 
         s += `<tr>
@@ -74,15 +75,15 @@ _commands.HELP = new Command("Lists available commands", function(args) {
 /*----------------------------------------
 | Client Commands
 |----------------------------------------*/
-_commands.CLS     = new Command("Clears the console");
+_commands.CLS  = new Command("Clears the console");
 
 
 /*----------------------------------------
-| POST: /api/webcli
+| ROUTER for posts to /api/webcli
 |----------------------------------------*/
 module.exports = function(app) {
     app.post("/api/webcli", function(req, res) {
-        setTimeout(function() {
+        setTimeout( () => {
             let result = new CmdResult("Invalid command", false, true);
 
             try {

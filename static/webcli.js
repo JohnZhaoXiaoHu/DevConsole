@@ -16,8 +16,8 @@
 
         // calling event handlers from here will make 'this'
         // refer to THIS instance of the class
-        self.clickHandler = (e) => { self.onClick(e) };
-        self.keyDownHandler = (e) => { self.onKeyDown(e) };
+        self.clickHandler = e =>  self.onClick(e);
+        self.keyDownHandler = e =>  self.onKeyDown(e);
 
         // when ctrl-`, toggle console div
         document.addEventListener('keydown', self.keyDownHandler);
@@ -95,16 +95,20 @@
             method: "post",
             headers: new Headers({"Content-Type": "application/json"}),
             body: JSON.stringify({cmdLine: text})
+
         }).then(function(response) {
             return response.json();
+
         }).then(function(result) {
             let output = result.output;
             let style  = result.isError ? "error" : "ok";
-
             result.isHTML ? self.writeHTML(output) : self.writeLine(output, style);
+
         }).catch(function() {
+
             self.writeLine("Error sending the request!", "error");
         }).then(function() { // finally, run the following:
+
             console.log('finally');
             self.busy(false);
             self.focus();
@@ -128,11 +132,10 @@
         this.scrollToBottom();
     }
 
-    writeLine(text, cssSuffix) {
+    writeLine(text, cssSuffix = "ok") {
         let span = document.createElement('span');
-        cssSuffix = cssSuffix || "ok";
 
-        span.className = "webcli-" + cssSuffix;
+        span.className = `webcli-${cssSuffix}`;
         span.innerText = text;
         this.outputEl.appendChild(span);
         this.newLine();
@@ -181,7 +184,7 @@
 
     busy(b) {
         this.isBusy = b;
-        this.busyEl.style.display = b ? "block" : "none";
+        this.busyEl.style.display  = b ? "block" : "none";
         this.inputEl.style.display = b ? "none" : "block";
     }
 }
