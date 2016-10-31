@@ -37,3 +37,33 @@
 .webcli-cmd   {color:#AAA;}
 .webcli-error {color:#F00;}
 .webcli-ok    {color:#0FF;}
+
+
+/*Table
+-----------------------------------------------------*/
+.webcli-tbl                { color:#8AE234; }
+.webcli-tbl td             { padding:2px 5px; }
+.webcli-tbl td:first-child { padding-left: 0; }
+
+.webcli-lbl { color: #D3D7CF; }
+.webcli-val { color: #525753; }
+
+/*Busy animation
+-----------------------------------------------------*/
+.webcli-busy
+{
+    width:24px; height:24px;
+
+    border-radius: 50%;
+    border-top: 2px solid #03ade0;
+    border-right: 2px solid transparent;
+
+    margin: 4px 0;
+
+    animation: spin .6s linear infinite;
+}
+
+@keyframes spin
+{
+    to { transform: rotate(360deg); }
+}

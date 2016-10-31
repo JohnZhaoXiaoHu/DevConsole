@@ -1,4 +1,4 @@
-class WebCLI {
+ class WebCLI {
     constructor() {
         let self = this;
 
@@ -8,6 +8,7 @@ class WebCLI {
         self.createElements();
         self.wireEvents();
         self.showGreeting();
+        self.busy(false);
     }
 
     wireEvents() {
@@ -40,6 +41,8 @@ class WebCLI {
             } else ctrlStyle.display = "none";
             return;
         }
+
+        if (self.isBusy) return;
 
         //Other keys (when input has focus)
         if (self.inputEl === document.activeElement) {
@@ -85,6 +88,29 @@ class WebCLI {
             self.outputEl.innerHTML = "";
             return;
         }
+
+        self.busy(true); // display busy spinner
+
+        fetch("/api/webcli", {
+            method: "post",
+            headers: new Headers({"Content-Type": "application/json"}),
+            body: JSON.stringify({cmdLine: text})
+        }).then(function(response) {
+            return response.json();
+        }).then(function(result) {
+            let output = result.output;
+            let style  = result.isError ? "error" : "ok";
+
+            result.isHTML ? self.writeHTML(output) : self.writeLine(output, style);
+        }).catch(function() {
+            self.writeLine("Error sending the request!", "error");
+        }).then(function() { // finally, run the following:
+            console.log('finally');
+            self.busy(false);
+            self.focus();
+        });
+
+        self.inputEl.blur();
     }
 
     focus() {
@@ -129,24 +155,33 @@ class WebCLI {
         let self = this, doc = document;
 
         // Create & store CLI elements
-        self.ctrlEl   = doc.createElement("div"); //CLI outer frame
-        self.outputEl = doc.createElement("div"); //holding output of console
-        self.inputEl  = doc.createElement("input"); //input control
+        self.ctrlEl   = doc.createElement("div"); // CLI outer frame
+        self.outputEl = doc.createElement("div"); // holding output of console
+        self.inputEl  = doc.createElement("input"); // input control
+        self.busyEl   = doc.createElement("div"); // busy spinner
 
         // Add classes
         self.ctrlEl.className   = 'webcli';
         self.outputEl.className = 'webcli-output';
         self.inputEl.className  = 'webcli-input';
+        self.busyEl.className   = 'webcli-busy';
 
-        // Add attributes
+        // Add attributes (if any)
         self.inputEl.setAttribute("spellcheck", "false");
 
-        // Put them together
+        // Put elements together
         self.ctrlEl.appendChild(self.outputEl);
         self.ctrlEl.appendChild(self.inputEl);
+        self.ctrlEl.appendChild(self.busyEl);
 
         // Hide by default & add to DOM
         self.ctrlEl.style.display = "none";
         doc.body.appendChild(self.ctrlEl);
+    }
+
+    busy(b) {
+        this.isBusy = b;
+        this.busyEl.style.display = b ? "block" : "none";
+        this.inputEl.style.display = b ? "none" : "block";
     }
 }
